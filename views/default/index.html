@@ -1,0 +1,81 @@
+{{extend 'layout.html'}}
+
+{{block head}}
+
+<script src="{{=URL('static', 'js/vue.js')}}"></script>
+<script>
+  // Define your URLs here.
+  var get_images_url = "{{=URL('api', 'get_images', user_signature=True)}}";
+  var add_image_url = "{{=URL('api', 'add_image', user_signature=True)}}";
+  var get_user_list_url = "{{=URL('api', 'get_user_list', user_signature=True)}}";
+  var user_images_url = "{{=URL('api', 'get_user_images')}}";
+</script>
+
+
+{{end}}
+
+<div class="main_content">
+  {{if auth.user is None:}}
+  <h2>Login to view images!</h2> 
+  
+  {{else:}}
+  <div id="vue-div" class="display:none">
+    <!-- Your code goes here.  Remember to call $("#vue-div").show() once you get the data for the first time. -->
+
+    <div class="container padded">
+
+      <div class="image_space threequarters">
+        <!-- Left part of the page -->
+        <div>
+          <!-- Code to upload files, with control buttons -->
+          <div id="uploader_div" style="display:none">
+            Upload an image file: <input id="file_input" type="file" v-on:change="upload_file" accept="image/jpeg">
+          </div>
+
+          <button v-if="!is_uploading" v-on:click="open_uploader"><i class="fa fa-plus"></i></button>
+          <button v-if="is_uploading"  v-on:click="close_uploader">Cancel</button>
+        </div>
+
+        <div class="image_container">
+          <!-- Put here the code to display the images -->
+
+          <ul class="container">
+          
+            <li v-for="image in user_images" class="card lifted padded quarter">
+              <img v-bind:src="image.image_url" height="200px" width="200px" class="padded"/>
+            </li> 
+          </ul>
+        </div>
+      </div>
+
+      <div class="user_space quarter right">
+        
+        
+        <!-- Right part of the page -->
+        <table class="fill" id="user_selector">
+          <tbody>
+            <tr v-for="users in user_list" class="user class">
+            
+        <!-- loop for every user in user_list -->
+              <td v-if="users.email == '{{=auth.user.email}}'" v-on:click="get_user_image_list(users.email)">
+               ${users.first_name} ${users.last_name}
+             </td>
+            
+            </tr>
+
+            <tr v-for="users in user_list" class="user class"> 
+               <td v-if="users.email != '{{=auth.user.email}}'" v-on:click="get_user_image_list(users.email)">
+               ${users.first_name} ${users.last_name}
+             </td>
+            </tr>
+          </tbody>
+        </table>
+
+    </div>
+
+  </div>
+  {{pass}}
+
+</div>
+
+<script src="{{=URL('static', 'js/default_index.js')}}"></script>
